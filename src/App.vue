@@ -18,6 +18,10 @@
     </section>
     <!-- Task list -->
     <section>
+      <div class="loading" v-if="taskStore.isLoading">
+        <h5>Loading...</h5>
+      </div>
+      <button @click="taskStore.$reset">Reset</button>
       <div class="task-list" v-if="pick == 'all'">
         <h5>All Task </h5>
         <p>You have {{ taskStore.taskCount }} of Task Left</p>
@@ -37,6 +41,7 @@
 </template>
 
 <script>
+import { storeToRefs } from 'pinia';
 import TaskDetails from './components/TaskDetails.vue';
 import TaskForm from './components/TaskForm.vue';
 import { useTaskStore } from './stores/TaskStore';
@@ -50,9 +55,12 @@ export default {
   setup() {
     const taskStore = useTaskStore();
 
+    taskStore.fetchTasks();
+    const { tasks, isLoading, taskCount, completedTasksCount } = storeToRefs(taskStore);
+
     const pick = ref('all');
 
-    return { taskStore, pick }
+    return { taskStore, pick, tasks, isLoading, taskCount, completedTasksCount }
   }
 
 }

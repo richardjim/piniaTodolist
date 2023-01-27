@@ -2,10 +2,8 @@ import { defineStore } from "pinia";
 
 export const useTaskStore = defineStore("taskStore", {
   state: () => ({
-    tasks: [
-      { id: 1, title: "Task 1", completed: true },
-      { id: 2, title: "Task 2", completed: false },
-    ],
+    tasks: [],
+    isLoading: false,
   }),
   getters: {
     completedTasks() {
@@ -24,15 +22,50 @@ export const useTaskStore = defineStore("taskStore", {
     },
   },
   actions: {
-    addTask(task) {
+    async fetchTasks() {
+      this.isLoading = true;
+      const response = await fetch("http://localhost:3000/tasks");
+      const data = await response.json();
+      this.tasks = data;
+      this.isLoading = false;
+    },
+    async addTask(task) {
       this.tasks.push(task);
+      const response = await fetch("http://localhost:3000/tasks", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(task),
+      });
+      if (response.error) {
+        console.log(response.error);
+      }
     },
-    deleteTask(id) {
+    async deleteTask(id) {
       this.tasks = this.tasks.filter((task) => task.id !== id);
+
+      const response = await fetch(`http://localhost:3000/tasks/${id}`, {
+        method: "DELETE",
+      });
+      if (response.error) {
+        console.log(response.error);
+      }
     },
-    toggleTask(id) {
+    async toggleTask(id) {
       const task = this.tasks.find((task) => task.id === id);
       task.completed = !task.completed;
+
+      const response = await fetch(`http://localhost:3000/tasks/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ completed: task.completed }),
+      });
+      if (response.error) {
+        console.log(response.error);
+      }
 
       return task;
     },
