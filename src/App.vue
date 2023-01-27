@@ -8,6 +8,9 @@
     </header>
     <!-- Filter -->
     <section>
+      <div class="new-task-form">
+        <TaskForm />
+      </div>
       <div class="filter">
         <button @click="pick = 'all'">All</button>
         <button @click="pick = 'completedTasks'">Completed</button>
@@ -17,12 +20,14 @@
     <section>
       <div class="task-list" v-if="pick == 'all'">
         <h5>All Task </h5>
+        <p>You have {{ taskStore.taskCount }} of Task Left</p>
         <div v-for="task in taskStore.tasks">
           <TaskDetails :task="task" />
         </div>
       </div>
       <div class="task-list" v-if="pick === 'completedTasks'">
         <h5>All Completed Task</h5>
+        <p>You have {{ taskStore.completedTasksCount }} of Task Left</p>
         <div v-for="task in taskStore.completedTasks">
           <TaskDetails :task="task" />
         </div>
@@ -33,11 +38,13 @@
 
 <script>
 import TaskDetails from './components/TaskDetails.vue';
+import TaskForm from './components/TaskForm.vue';
 import { useTaskStore } from './stores/TaskStore';
 import { ref } from 'vue'
 export default {
   components: {
-    TaskDetails
+    TaskDetails,
+    TaskForm
   },
 
   setup() {
